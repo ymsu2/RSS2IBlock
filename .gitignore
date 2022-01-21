@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+/.idea/
+/bitrix/
+/bitrix
+/upload/
+/upload
+/vendor/
+/local/vendor/
+/local/vendor
+/web.config
+/.htaccess
+/robots.txt
+/*.xml
+*.swp
+*.log
