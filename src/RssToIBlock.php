@@ -31,17 +31,15 @@
 
 				if (($d2-$d1)/3600 >= $this->_timePeriod) break;
 				$date = new \DateTime($arRes["item"][$i]["pubDate"]);
-				$arFeed[$i]["pubDate"] = $date->format('d.m.Y H:i:s');
-
-				$arFeed[$i]["title"] 				= $arRes["item"][$i]["title"];
-				$arFeed[$i]["description"] 			= $arRes["item"][$i]["description"];
-				$arFeed[$i]["link"] 				= $arRes["item"][$i]["link"];
-				$arFeed[$i]["enclosure"]["url"] 	= $arRes["item"][$i]["enclosure"]["url"];
-				$arFeed[$i]["enclosure"]["width"] 	= $arRes["item"][$i]["enclosure"]["width"];
-				$arFeed[$i]["enclosure"]["height"] 	= $arRes["item"][$i]["enclosure"]["height"];
-				$arFeed[$i]["description"] 			= $arRes["item"][$i]["description"];
-				$arFeed[$i]["category"] 			= $arRes["item"][$i]["category"];
-
+				$arFeed[$i]["pubDate"] 			= $date->format('d.m.Y H:i:s');
+				$arFeed[$i]["title"]			= $arRes["item"][$i]["title"];
+				$arFeed[$i]["description"]		= $arRes["item"][$i]["description"];
+				$arFeed[$i]["link"] 			= $arRes["item"][$i]["link"];
+				$arFeed[$i]["enclosure"]["url"]		= $arRes["item"][$i]["enclosure"]["url"];
+				$arFeed[$i]["enclosure"]["width"]	= $arRes["item"][$i]["enclosure"]["width"];
+				$arFeed[$i]["enclosure"]["height"]	= $arRes["item"][$i]["enclosure"]["height"];
+				$arFeed[$i]["description"]		= $arRes["item"][$i]["description"];
+				$arFeed[$i]["category"] 		= $arRes["item"][$i]["category"];
 			endfor;
 
 			$arFilter = array(
@@ -62,35 +60,33 @@
 
 			$arLinks = array();
 
-			while ($arRecord = $dbRecords->GetNext())
+			while ($arRecord = $dbRecords->GetNext()):
 				$arLinks[] = $arRecord["PROPERTY_LINK_VALUE"];
-
-			$i=0;
-			for ($i = 0; $i < count($arFeed); $i++):
-				if(in_array($arFeed[$i]["link"], $arLinks)) // если аналогичная запись уже имеется в БД, то новую не создаем во избежание дублирования записей
-					continue;
-				$arProperties = array (
-					"FEED_URL" => $this->_feedUrl,
-					"LINK" => $arFeed[$i]["link"],
-					"ENC_URL" => $arFeed[$i]["enclosure"]["url"],
-					"ENC_WIDTH" => $arFeed[$i]["enclosure"]["width"],
-					"ENC_HEIGHT" => $arFeed[$i]["enclosure"]["height"],
-					"CATEGORY" => $arFeed[$i]["category"]
-				);
-				$arFields = array(
-					"IBLOCK_ID" => $this->_iblockId,
-					"NAME" => $arFeed[$i]["title"],
-					"CODE" => CUtil::translit($arFeed[$i]["title"], "ru" , $params),
-					"PREVIEW_TEXT" => $arFeed[$i]["description"],
-					"DETAIL_TEXT" => $arFeed[$i]["description"],
-					"DATE_CREATE" => $arFeed[$i]["pubDate"], 
-					"ACTIVE_FROM" => $arFeed[$i]["pubDate"],
-					"PROPERTY_VALUES" => $arProperties
-				);
-				$iblockElement = new CIBlockElement;
-				$iblockElement->Add($arFields, false, false, true);
-				$i++;
-			endfor;
-		}
-	};
+				for ($i = 0; $i < count($arFeed); $i++):
+					if(in_array($arFeed[$i]["link"], $arLinks)) // если аналогичная запись уже имеется в БД, то новую не создаем во избежание дублирования записей
+						continue;
+						$arProperties = array (
+						"FEED_URL" => $this->_feedUrl,
+						"LINK" => $arFeed[$i]["link"],
+						"ENC_URL" => $arFeed[$i]["enclosure"]["url"],
+						"ENC_WIDTH" => $arFeed[$i]["enclosure"]["width"],
+						"ENC_HEIGHT" => $arFeed[$i]["enclosure"]["height"],
+						"CATEGORY" => $arFeed[$i]["category"]
+					);
+					$arFields = array(
+						"IBLOCK_ID" => $this->_iblockId,
+						"NAME" => $arFeed[$i]["title"],
+						"CODE" => CUtil::translit($arFeed[$i]["title"], "ru" , $params),
+						"PREVIEW_TEXT" => $arFeed[$i]["description"],
+						"DETAIL_TEXT" => $arFeed[$i]["description"],
+						"DATE_CREATE" => $arFeed[$i]["pubDate"], 
+						"ACTIVE_FROM" => $arFeed[$i]["pubDate"],
+						"PROPERTY_VALUES" => $arProperties
+					);
+					$iblockElement = new CIBlockElement;
+					$iblockElement->Add($arFields, false, false, true); // добавляем новую запись в БД
+				endfor;
+			endwhile;
+		} // end function fetch()
+	}; // end class RssToIBlock
 ?>
