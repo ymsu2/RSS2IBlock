@@ -23,7 +23,7 @@
 			CModule::IncludeModule("iblock");
 			$arRes = CIBlockRSS::GetNewsEx($this->_feedUrl, $this->_feedPort, $this->_feedPath, $this->_feedQuery);
 			$arRes = CIBlockRSS::FormatArray($arRes);
-			$d2 = strtotime(now);
+			$d2 = strtotime('now');
 			$arFeed = array();
 
 			for ($i = 0; $i < count($arRes["item"]); $i++):
